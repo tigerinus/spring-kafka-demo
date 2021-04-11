@@ -1,4 +1,4 @@
-package com.wangxiaohu.kafkademo;
+package com.wangxiaohu.kafkademo.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaAdmin;
 
 @Configuration
-public class KafkaConfiguration {
+public class KafkaAdminConfiguration {
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
