@@ -7,6 +7,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 
 @Configuration
@@ -23,7 +24,6 @@ public class KafkaAdminConfiguration {
 
     @Bean
     public NewTopic demoTopic() {
-        NewTopic topic = new NewTopic("demo", numPartitions, (short) 1);
-        return topic;
+        return TopicBuilder.name("demo").partitions(numPartitions).replicas(1).build();
     }
 }
