@@ -6,6 +6,7 @@ import com.wangxiaohu.kafkademo.model.Greeting;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class KafkaConsumeService {
     private final static ObjectMapper _objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "demo", groupId = "MainConsumer", containerFactory = "listenerContainerFactory")
-    public void onMessage(ConsumerRecord<String, Greeting> record) {
+    public void onMessage(ConsumerRecord<String, Greeting> record, Acknowledgment acknowledgment) {
         if (null == record) {
             log.error("record is null");
             return;
@@ -31,6 +32,8 @@ public class KafkaConsumeService {
             log.warn("unable to serialize greeting object", e);
             return;
         }
+
+        acknowledgment.acknowledge();
         log.info(output);
     }
 }
