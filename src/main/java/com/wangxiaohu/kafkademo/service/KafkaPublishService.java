@@ -1,7 +1,9 @@
 package com.wangxiaohu.kafkademo.service;
 
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.protocol.Message;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wangxiaohu.kafkademo.model.Greeting;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -16,17 +18,25 @@ import lombok.extern.slf4j.Slf4j;
 public class KafkaPublishService {
 
     @Autowired
-    private KafkaTemplate<String, String> _kafkaTemplate;
+    private KafkaTemplate<String, Greeting> _kafkaTemplate;
 
-    public void sendMessage(String key, String value) {
+    private ObjectMapper _objectMapper;
 
-        ListenableFuture<SendResult<String, String>> future = _kafkaTemplate.send("demo", key, value);
+    public void sendMessage(String key, Greeting value) {
 
-        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        ListenableFuture<SendResult<String, Greeting>> future = _kafkaTemplate.send("demo", key, value);
+
+        future.addCallback(new ListenableFutureCallback<SendResult<String, Greeting>>() {
 
             @Override
-            public void onSuccess(SendResult<String, String> result) {
-                log.info("Sent message=[" + value + "] with offset=[" + result.getRecordMetadata().offset() + "]");
+            public void onSuccess(SendResult<String, Greeting> result) {
+                String json = "(message could not be serialized)";
+                try {
+                    json = _objectMapper.writeValueAsString(value);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                log.info("Sent message=[" + json + "] with offset=[" + result.getRecordMetadata().offset() + "]");
             }
 
             @Override

@@ -12,6 +12,8 @@ import org.springframework.kafka.core.KafkaAdmin;
 @Configuration
 public class KafkaAdminConfiguration {
 
+    private int numPartitions = 2;
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configMap = new HashMap<>();
@@ -21,6 +23,7 @@ public class KafkaAdminConfiguration {
 
     @Bean
     public NewTopic demoTopic() {
-        return new NewTopic("demo", 1, (short) 1);
+        NewTopic topic = new NewTopic("demo", numPartitions, (short) 1);
+        return topic;
     }
 }
