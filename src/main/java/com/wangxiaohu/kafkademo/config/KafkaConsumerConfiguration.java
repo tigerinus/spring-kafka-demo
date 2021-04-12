@@ -1,12 +1,14 @@
 package com.wangxiaohu.kafkademo.config;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.wangxiaohu.kafkademo.model.Greeting;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -21,11 +23,14 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 @EnableKafka
 public class KafkaConsumerConfiguration {
 
+    @Value("${spring.kafka.bootstrap-servers}")
+    private List<String> _bootstrapServers;
+
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, Greeting> consumerFactory() {
 
         Map<String, Object> configurationMap = new HashMap<>();
-        configurationMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        configurationMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, String.join(",", _bootstrapServers));
         configurationMap.put(ConsumerConfig.GROUP_ID_CONFIG, "MainConsumer");
         configurationMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         configurationMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
@@ -40,8 +45,8 @@ public class KafkaConsumerConfiguration {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> listenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, Greeting> listenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Greeting> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.getContainerProperties().setAckMode(AckMode.MANUAL_IMMEDIATE);
         return factory;
