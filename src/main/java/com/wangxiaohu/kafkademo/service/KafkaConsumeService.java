@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wangxiaohu.kafkademo.model.Greeting;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +17,13 @@ public class KafkaConsumeService {
     private final static ObjectMapper _objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "demo", groupId = "MainConsumer", containerFactory = "listenerContainerFactory")
-    public void onMessage(Greeting greeting) {
-        if (null == greeting) {
-            log.error("greeting is null");
+    public void onMessage(ConsumerRecord<String, Greeting> record) {
+        if (null == record) {
+            log.error("record is null");
             return;
         }
 
+        Greeting greeting = record.value();
         String output;
         try {
             output = _objectMapper.writeValueAsString(greeting);
