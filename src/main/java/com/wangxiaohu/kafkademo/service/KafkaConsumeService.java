@@ -16,17 +16,9 @@ public class KafkaConsumeService {
     private final static ObjectMapper _objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "demo", groupId = "MainConsumer", containerFactory = "listenerContainerFactory")
-    public void onMessage(String message) {
-        if (null == message) {
-            log.error("message is null");
-            return;
-        }
-
-        Greeting greeting;
-        try {
-            greeting = _objectMapper.readValue(message, Greeting.class);
-        } catch (JsonProcessingException e) {
-            log.warn(String.format("unable to parse '%s'.", message), e);
+    public void onMessage(Greeting greeting) {
+        if (null == greeting) {
+            log.error("greeting is null");
             return;
         }
 
